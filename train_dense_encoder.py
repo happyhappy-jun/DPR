@@ -233,6 +233,8 @@ class BiEncoderTrainer(object):
             else:
                 validation_loss = self.validate_nll()
 
+        wandb.log({"validation_loss": validation_loss})
+
         if save_cp:
             cp_name = self._save_checkpoint(scheduler, epoch, iteration)
             logger.info("Saved checkpoint to %s", cp_name)

@@ -21,7 +21,7 @@ from typing import Tuple
 import hydra
 import torch
 import wandb
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig, OmegaConf, omegaconf
 from torch import Tensor as T
 from torch import nn
 
@@ -67,11 +67,6 @@ class BiEncoderTrainer(object):
     def __init__(self, cfg: DictConfig):
         self.shard_id = cfg.local_rank if cfg.local_rank != -1 else 0
         self.distributed_factor = cfg.distributed_world_size or 1
-
-        wandb.init(
-            project="rag",
-        )  # Initialize wandb
-        wandb.config.update(cfg)  # Assuming cfg contains all necessary configurations
 
         logger.info("***** Initializing components for training *****")
 
@@ -827,6 +822,15 @@ def _do_biencoder_fwd_pass(
 
 @hydra.main(config_path="conf", config_name="biencoder_train_cfg")
 def main(cfg: DictConfig):
+    wandb.config = omegaconf.OmegaConf.to_container(
+        cfg, resolve=True, throw_on_missing=True
+    )
+
+    wandb.login()
+    wandb.init(
+        project="rag",
+    )  # Initialize wandb
+
     if cfg.train.gradient_accumulation_steps < 1:
         raise ValueError(
             "Invalid gradient_accumulation_steps parameter: {}, should be >= 1".format(

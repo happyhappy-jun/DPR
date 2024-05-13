@@ -20,6 +20,7 @@ from typing import Tuple
 
 import hydra
 import torch
+import wandb
 from omegaconf import DictConfig, OmegaConf
 from torch import Tensor as T
 from torch import nn
@@ -50,8 +51,6 @@ from dpr.utils.model_utils import (
     get_model_obj,
     load_states_from_checkpoint,
 )
-
-import wandb
 
 logger = logging.getLogger()
 setup_logger(logger)
@@ -579,9 +578,9 @@ class BiEncoderTrainer(object):
                 )
                 wandb.log(
                     {
-                        "loss": loss.item(),
                         "epoch": epoch,
-                        "step": data_iteration,
+                        "step": epoch_batches * epoch + data_iteration,
+                        "loss": loss.item(),
                         "lr": lr,
                     }
                 )
@@ -617,8 +616,8 @@ class BiEncoderTrainer(object):
         logger.info("epoch total correct predictions=%d", epoch_correct_predictions)
         wandb.log(
             {
-                "epoch_loss": epoch_loss,
                 "epoch": epoch,
+                "loss": epoch_loss,
                 "correct_predictions": epoch_correct_predictions,
             }
         )

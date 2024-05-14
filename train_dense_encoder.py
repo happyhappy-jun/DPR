@@ -24,6 +24,7 @@ import wandb
 from omegaconf import DictConfig, OmegaConf, omegaconf
 from torch import Tensor as T
 from torch import nn
+from torch.distributed.launch import parse_args
 
 from dpr.models import init_biencoder_components
 from dpr.models.biencoder import BiEncoderNllLoss, BiEncoderBatch
@@ -826,11 +827,6 @@ def main(cfg: DictConfig):
         cfg, resolve=True, throw_on_missing=True
     )
 
-    wandb.login()
-    wandb.init(
-        project="rag",
-    )  # Initialize wandb
-
     if cfg.train.gradient_accumulation_steps < 1:
         raise ValueError(
             "Invalid gradient_accumulation_steps parameter: {}, should be >= 1".format(
@@ -866,14 +862,20 @@ def main(cfg: DictConfig):
 
 if __name__ == "__main__":
     logger.info("Sys.argv: %s", sys.argv)
+
     hydra_formatted_args = []
     # convert the cli params added by torch.distributed.launch into Hydra format
+
     for arg in sys.argv:
         if arg.startswith("--"):
+            if "local-rank" in arg:
+                arg = arg.replace("local-rank", "local_rank")
             hydra_formatted_args.append(arg[len("--") :])
         else:
             hydra_formatted_args.append(arg)
     logger.info("Hydra formatted Sys.argv: %s", hydra_formatted_args)
     sys.argv = hydra_formatted_args
 
+    wandb.login()
+    wandb.init(project="rag", group=wandb.util.generate_id())
     main()

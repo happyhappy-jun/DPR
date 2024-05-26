@@ -1,5 +1,13 @@
 # @package _group_
 
+nq_train_w200:
+  _target_: dpr.data.retriever_data.CsvCtxSrc
+  file: "/home/junyoon/data/nq-train-w200.json"
+
+nq_dev_w200:
+  _target_: dpr.data.retriever_data.CsvCtxSrc
+  file: "/home/junyoon/data/nq-dev-w200.json"
+
 nq_test:
   _target_: dpr.data.retriever_data.CsvQASrc
   file: data.retriever.qas.nq-test

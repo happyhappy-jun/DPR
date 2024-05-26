@@ -4,3 +4,8 @@ dpr_wiki_w100:
   _target_: dpr.data.retriever_data.CsvCtxSrc
   file: "/home/junyoon/data/psgs_w100.tsv"
   id_prefix:
+
+dpr_wiki_w200:
+  _target_: dpr.data.retriever_data.CsvCtxSrc
+  file: "/home/junyoon/data/psgs_w200.tsv"
+  id_prefix:

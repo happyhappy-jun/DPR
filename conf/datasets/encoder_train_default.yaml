@@ -1,5 +1,13 @@
 # @package _group_
 
+nq_train_w200:
+  _target_: dpr.data.biencoder_data.JsonQADataset
+  file: "/home/junyoon/data/nq-train-w200.json"
+
+nq_dev_w200:
+  _target_: dpr.data.biencoder_data.JsonQADataset
+  file: "/home/junyoon/data/nq-dev-w200.json"
+
 nq_train:
   _target_: dpr.data.biencoder_data.JsonQADataset
   file: data.retriever.nq-train
